@@ -29,7 +29,12 @@ wayland_util_dep = declare_dependency(
 if get_option('scanner')
 	# wayland-scanner
 
-	scanner_deps = [ dependency('expat') ]
+	if host_machine.system() == 'darwin'
+		scanner_deps = [ cc.find_library('expat') ]
+	else
+		scanner_deps = [ dependency('expat') ]
+	endif
+
 	scanner_args = [ '-include', 'config.h' ]
 
 	if get_option('dtd_validation')
