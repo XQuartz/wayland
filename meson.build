@@ -87,7 +87,12 @@ if get_option('libraries')
 		# Otherwise, assume that epoll(7) is supported natively.
 		epoll_dep = []
 	endif
-	ffi_dep = dependency('libffi')
+
+	if host_machine.system() == 'darwin'
+		ffi_dep = cc.find_library('ffi')
+	else
+		ffi_dep = dependency('libffi')
+	endif
 
 	decls = [
 		{ 'header': 'sys/signalfd.h', 'symbol': 'SFD_CLOEXEC' },

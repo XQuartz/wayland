@@ -40,7 +40,11 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <time.h>
+#ifdef __APPLE__
+#include <ffi/ffi.h>
+#else
 #include <ffi.h>
+#endif
 
 #include "wayland-util.h"
 #include "wayland-private.h"
