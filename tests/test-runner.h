@@ -31,6 +31,12 @@
 
 #include <unistd.h>
 
+#ifdef __APPLE__
+#define TEST_SECTION "__RODATA,test_section"
+#else
+#define TEST_SECTION "test_section"
+#endif
+
 struct test {
 	const char *name;
 	void (*run)(void);
@@ -41,7 +47,7 @@ struct test {
 	static void name(void);						\
 									\
 	const struct test test##name					\
-		 __attribute__ ((used, section ("test_section"))) = {	\
+		 __attribute__ ((used, section (TEST_SECTION))) = {	\
 		#name, name, 0						\
 	};								\
 									\
@@ -51,7 +57,7 @@ struct test {
 	static void name(void);						\
 									\
 	const struct test test##name					\
-		 __attribute__ ((used, section ("test_section"))) = {	\
+		 __attribute__ ((used, section (TEST_SECTION))) = {	\
 		#name, name, 1						\
 	};								\
 									\
