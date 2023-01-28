@@ -63,7 +63,12 @@ static int timeouts_enabled = 1;
 /* set to one if the output goes to the terminal */
 static int is_atty = 0;
 
+#ifdef __APPLE__
+extern const struct test __start_test_section __asm("section$start$__RODATA$test_section");
+extern const struct test __stop_test_section __asm("section$end$__RODATA$test_section");
+#else
 extern const struct test __start_test_section, __stop_test_section;
+#endif
 
 static const struct test *
 find_test(const char *name)
