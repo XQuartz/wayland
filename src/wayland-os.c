@@ -131,6 +131,13 @@ wl_os_socket_peercred(int sockfd, uid_t *uid, gid_t *gid, pid_t *pid)
 #if HAVE_XUCRED_CR_PID
 	/* Since https://cgit.freebsd.org/src/commit/?id=c5afec6e895a */
 	*pid = ucred.cr_pid;
+#elif defined(LOCAL_PEERPID)
+	/* darwin does not carry the peer pid in struct xucred, but it can be
+	 * queried separately. The uid and gid are already known at this point,
+	 * so treat the pid as best effort rather than failing the whole call. */
+	len = sizeof(*pid);
+	if (getsockopt(sockfd, SOL_LOCAL, LOCAL_PEERPID, pid, &len) < 0)
+		*pid = 0;
 #else
 	*pid = 0;
 #endif
