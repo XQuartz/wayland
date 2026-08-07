@@ -77,6 +77,7 @@ if host_machine.system() == 'freebsd'
 ''', name : 'MSG_CMSG_CLOEXEC works correctly')
 endif
 config_h.set10('HAVE_BROKEN_MSG_CMSG_CLOEXEC', have_broken_msg_cmsg_cloexec)
+config_h.set10('HAVE_BROKEN_MSG_DONTWAIT', host_machine.system() == 'darwin')
 
 if get_option('libraries')
 	if host_machine.system() in ['darwin', 'freebsd', 'openbsd']
