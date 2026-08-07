@@ -23,6 +23,8 @@
  * SOFTWARE.
  */
 
+#include "../config.h"
+
 #include <stddef.h>
 #include <stdio.h>
 #include <errno.h>
@@ -44,6 +46,13 @@
 #include "wayland-server-core.h"
 #include "wayland-server-private.h"
 #include "wayland-os.h"
+
+#ifndef HAVE_STRUCT_ITIMERSPEC
+struct itimerspec {
+	struct timespec it_interval;
+	struct timespec it_value;
+};
+#endif
 
 /** \cond INTERNAL */
 

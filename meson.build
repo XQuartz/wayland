@@ -37,6 +37,11 @@ compiler_flags = [
 ]
 
 cc = meson.get_compiler('c')
+config_h.set('HAVE_STRUCT_ITIMERSPEC', cc.has_type(
+	'struct itimerspec',
+	prefix: '#include <time.h>',
+	args: cc_args,
+))
 add_project_arguments(
 	cc.get_supported_arguments(compiler_flags),
 	language: 'c'
