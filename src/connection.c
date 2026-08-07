@@ -77,6 +77,22 @@ struct wl_connection {
 	int want_flush;
 };
 
+#if HAVE_BROKEN_MSG_DONTWAIT
+static int
+set_nonblocking(int fd)
+{
+	int flags;
+
+	flags = fcntl(fd, F_GETFL);
+	if (flags == -1)
+		return -1;
+	if (flags & O_NONBLOCK)
+		return 0;
+
+	return fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+}
+#endif
+
 static inline size_t
 size_pot(uint32_t size_bits)
 {
@@ -328,6 +344,14 @@ wl_connection_create(int fd, size_t max_buffer_size)
 	connection = zalloc(sizeof *connection);
 	if (connection == NULL)
 		return NULL;
+
+#if HAVE_BROKEN_MSG_DONTWAIT
+	/* Darwin defines MSG_DONTWAIT but does not honor it for sendmsg(). */
+	if (set_nonblocking(fd) < 0) {
+		free(connection);
+		return NULL;
+	}
+#endif
 
 	wl_connection_set_max_buffer_size(connection, max_buffer_size);
 

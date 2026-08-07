@@ -23,6 +23,8 @@
  * SOFTWARE.
  */
 
+#include "../config.h"
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -36,6 +38,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <poll.h>
+#include <fcntl.h>
 
 #include "wayland-os.h"
 #include "wayland-private.h"
@@ -63,6 +66,32 @@ TEST(connection_create)
 	int s[2];
 
 	connection = setup(s);
+	wl_connection_destroy(connection);
+	close(s[0]);
+	close(s[1]);
+}
+
+TEST(connection_create_nonblocking)
+{
+	struct wl_connection *connection;
+	int flags;
+	int s[2];
+
+	assert(wl_os_socketpair_cloexec(AF_UNIX, SOCK_STREAM, 0, s) == 0);
+	flags = fcntl(s[0], F_GETFL);
+	assert(flags >= 0);
+	assert((flags & O_NONBLOCK) == 0);
+
+	connection = wl_connection_create(s[0], WL_BUFFER_DEFAULT_MAX_SIZE);
+	assert(connection);
+	flags = fcntl(s[0], F_GETFL);
+	assert(flags >= 0);
+#if HAVE_BROKEN_MSG_DONTWAIT
+	assert(flags & O_NONBLOCK);
+#else
+	assert((flags & O_NONBLOCK) == 0);
+#endif
+
 	wl_connection_destroy(connection);
 	close(s[0]);
 	close(s[1]);
