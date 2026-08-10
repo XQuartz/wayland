@@ -38,7 +38,12 @@ if get_option('scanner')
 	scanner_args = [ '-include', 'config.h' ]
 
 	if get_option('dtd_validation')
-		scanner_deps += dependency('libxml-2.0')
+		if host_machine.system() == 'darwin'
+			scanner_deps += [ cc.find_library('xml2') ]
+		else
+			scanner_deps += [ dependency('libxml-2.0') ]
+		endif
+
 		scanner_args += '-DHAVE_LIBXML=1'
 	endif
 
