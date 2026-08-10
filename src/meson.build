@@ -79,7 +79,7 @@ if get_option('scanner')
 	endif
 endif
 
-if meson.is_cross_build() or not get_option('scanner')
+if not meson.can_run_host_binaries() or not get_option('scanner')
 	scanner_dep = dependency('wayland-scanner', native: true, version: meson.project_version())
 	wayland_scanner_for_build = find_program(scanner_dep.get_variable(pkgconfig: 'wayland_scanner'))
 else
